@@ -1,0 +1,365 @@
+--회원(메인관리자 / 서브관리자/ 일반회원) --
+--m_seq--
+drop table p_member cascade constraints;
+drop sequence p_m_seq;
+
+create sequence p_m_seq
+increment by 1
+start with 1
+minvalue 1
+nocache;
+
+create table p_member(
+m_num number primary key,
+m_grade varchar2(10) not null,
+m_id varchar2(20) not null,
+m_pw varchar2(20) not null,
+m_name varchar2(20) not null,
+m_age number not null,
+m_phone_1 varchar2(3)not null,
+m_phone_2 varchar2(4)not null,
+m_phone_3 varchar2(4)not null,
+m_email varchar2(30) not null,
+m_addr varchar2(50) not null,
+m_date date default sysdate
+);
+
+insert into p_member 
+values(p_m_seq.nextval, 'A', 'admin','1234','메인관리자',100,'010','1111','2222','abc@naver.com','대전광역시 동구','2021-03-28');
+
+insert into p_member 
+values(p_m_seq.nextval, 'S', 'yun90','y1234','윤태균',32,'010','7777','3333','ytg99@naver.com','서울시 동작구','2021-03-28');
+
+insert into p_member 
+values(p_m_seq.nextval, 'S', 'song96','s0000','송혜미',26,'010','3535','6767','song96@hanmail.net','인천광역시 서구','2021-03-28');
+
+insert into p_member(m_num,m_grade,m_id,m_pw,m_name,m_age,m_phone_1,m_phone_2,m_phone_3,m_email,m_addr)
+values(p_m_seq.nextval, 'M', 'hong2','h0123','홍길동',24,'010','9999','3333','hong2@naver.com','서울시 마포구');
+
+insert into p_member(m_num,m_grade,m_id,m_pw,m_name,m_age,m_phone_1,m_phone_2,m_phone_3,m_email,m_addr)
+values(p_m_seq.nextval, 'M', 'hanjk93','j9999','한진경',29,'010','1993','9933','hanj93@naver.com','경기도 고양시 덕양구');
+
+insert into p_member(m_num,m_grade,m_id,m_pw,m_name,m_age,m_phone_1,m_phone_2,m_phone_3,m_email,m_addr)
+values(p_m_seq.nextval, 'M', 'lee96','l8888','이찬',26,'010','8888','7777','lee96@gmail.com','서울시 은평구');
+
+col m_num for 99999
+col m_grade for a5
+col m_id for a10
+col m_pw for a12
+col m_name for a15
+col m_age for 999
+col m_phone_1 for a6
+col m_phone_2 for a8
+col m_phone_3 for a8
+col m_email for a20
+col m_addr for a15
+
+select * from p_member;
+commit;
+
+--티켓정보
+drop table p_ticket cascade constraints;
+
+CREATE TABLE p_ticket
+(
+    tk_num varchar2(30),--티켓번호
+    tk_date varchar2(20) not null, --출발일
+    tk_partner number default 1, -- 동승인원(기본값 1)
+    m_id varchar2(20) not null, --회원id
+    t_num number references p_train (t_num) on delete cascade,--열차번호
+    r_num number references p_race (r_num) on delete cascade,--운행번호
+    s_no number references p_sit (s_no) on delete cascade,--좌석고유번호
+    r_start varchar2(20) not null,--출발역
+    r_end varchar2(20) not null,--도착역
+    tk_reserve varchar2(15) default '미결제', --예약상태(미결제,결제완료,예약취소,결제취소)
+    tk_bookday date default sysdate -- 예약일자
+);
+
+--티켓번호 시퀀스
+drop sequence p_tk_seq;
+
+commit;
+
+col tk_num for 9999999;
+col tk_date for a10;
+col tk_partner for 9;
+col m_id for a10;
+col t_num for 99;
+col r_num for 9999;
+col s_no for 99;
+col tk_reserve for a10;
+col tk_bookday for a9;
+
+select * from p_ticket;
+
+commit;
+
+--전체 공지사항
+drop table p_kboard;
+
+create table p_kboard( 
+	k_num number not null primary key, --글번호
+	k_writer varchar2(20) not null, --작성자(admin)
+	k_subject varchar2(100) not null, --글제목
+	k_passwd varchar2(20) not null, --비밀번호
+	k_reg_date date not null, --작성일
+	k_readcount int default 0, --조회수
+	k_content varchar2(2000) not null --글내용
+);
+
+drop sequence k_seq;
+create sequence k_seq
+  increment by 1
+  start with 1 
+  minvalue 1
+  maxvalue 10000
+  nocache;
+
+Insert into p_kboard(K_NUM,K_WRITER,K_SUBJECT,K_PASSWD,K_REG_DATE,K_READCOUNT,K_CONTENT) values (k_seq.nextva,'관리자','네이버,카카오 연계 승차권 구매 ','1234',to_date('21/04/13','RR/MM/DD'),160,'비대면 승차권 예매 확대 및 편리한 철도 서비스를 위하여 네이버, 카카오 앱에서 승차권을 구매할 수 있는 서비스를 시행합니다.<br><br>판매 조건 : 철도 회원가입 없이, 코레일톡을 설치하지 않아도 네이버,카카오 회원이라면 누구나 편리하게 구매 가능<br>시행일시 : 21.02.01(월)오전 10시<br>판매매체(APP) : 네이버, 네이버지도, 카카오T, 카카오톡');
+Insert into p_kboard(K_NUM,K_WRITER,K_SUBJECT,K_PASSWD,K_REG_DATE,K_READCOUNT,K_CONTENT) values (k_seq.nextva,'관리자','열차지연','1234',to_date('21/04/15','RR/MM/DD'),520,'부산-서울 24호차 폭우로 인한 철로 정리로 10분 지연됩니다');
+Insert into p_kboard(K_NUM,K_WRITER,K_SUBJECT,K_PASSWD,K_REG_DATE,K_READCOUNT,K_CONTENT) values (k_seq.nextva,'관리자','열차지연','1234',to_date('21/04/18','RR/MM/DD'),350,'서울-부산 1호차 철로 이물질 제거 중으로 10분 지연됩니다.');
+Insert into p_kboard(K_NUM,K_WRITER,K_SUBJECT,K_PASSWD,K_REG_DATE,K_READCOUNT,K_CONTENT) values (k_seq.nextva,'관리자','열차지연','1234',to_date('21/04/18','RR/MM/DD'),21,'서울-부산 47호차 철로 이물질 제거 중으로 10분 지연됩니다.');
+Insert into p_kboard(K_NUM,K_WRITER,K_SUBJECT,K_PASSWD,K_REG_DATE,K_READCOUNT,K_CONTENT) values (k_seq.nextva,'관리자','당첨자 발표','1234',to_date('21/04/18','RR/MM/DD'),137,'**코레일 사랑 3행시 당첨자 발표**<br>서울 서초구 이*금(21030200)고객님<br>부산시 해운대구 김*남(21304020)고객님<br>충남 서산시 윤*자(20302020)고객님<br>축하드립니다!');
+
+
+col k_num for 99999
+col k_writer for a10
+col k_subject for a10
+col k_passwd for a5
+col k_reg_date for a10
+col k_readcount for 99999
+col k_content for a10
+
+select * from p_kboard;
+
+commit;
+
+--VOC qna 1:1 게시판(관리자와 소통)--
+drop table p_QnA;
+
+create table p_QnA( 
+	q_num number not null primary key, 
+            q_writer varchar2(30) not null,  
+            q_receiver varchar2(30) not null, -- 받는사람
+	q_subject varchar2(100) not null,
+	q_reg_date date default sysdate,
+	q_ref number not null,
+	q_re_step number not null,
+	q_re_level number not null,
+	q_content varchar2(1000) not null,
+	q_ip varchar2(20) not null,
+            q_state varchar2(20) default '대기' );
+
+drop sequence Q_seq;
+create sequence Q_seq
+  increment by 1
+  start with 1
+  minvalue 1
+  nocache;
+
+
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'hong2','admin','문의드려요',to_date('19/01/01','RR/MM/DD'),1,0,0,'환불한 건 언제들어와요?','127.0.51.5','답변완료');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'admin','hong2','[답변]안녕하세요 고객님',to_date('19/01/02','RR/MM/DD'),1,1,1,'카드사에 따라 환불일에 차이가 있습니다. 자세한 날짜는 카드사에 문의바랍니다','127.0.0.1','re');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'hanjk93','admin','화장실냄새',to_date('19/07/02','RR/MM/DD'),3,0,0,'냄새 너무나요','130.0.30.1','답변완료');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'admin','hanjk93','[답변]안녕하세요 고객님',to_date('19/07/03','RR/MM/DD'),3,1,1,'불편을 드려 죄송합니다.<br>저희 코레일은 매시간 환기를 하고 있습니다.<br>다만 무더위에 악취가 금방 올라오는 듯 합니다. 환기에 더 신경쓰겠습니다.','127.0.0.1','re');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'hong2','admin','전기고장',to_date('21/04/10','RR/MM/DD'),5,0,0,'3호차 A2번좌석','127.0.51.5','대기');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'hanjk93','admin','시트구멍',to_date('21/04/12','RR/MM/DD'),6,0,0,'421호차 B10번좌석 구멍났어요','130.0.30.1','답변완료');
+Insert into P_QNA (Q_NUM,Q_WRITER,Q_RECEIVER,Q_SUBJECT,Q_REG_DATE,Q_REF,Q_RE_STEP,Q_RE_LEVEL,Q_CONTENT,Q_IP,Q_STATE) values (Q_seq.nextval,'admin','hanjk93','[답변]안녕하세요 고객님',to_date('21/04/13','RR/MM/DD'),6,1,1,'불편을 드려 죄송합니다.<br>3개월간 순차적으로 전체 시트 교체 예정입니다','127.0.0.1','re');
+
+
+commit;
+
+col q_content for a10;
+col q_num for 99;
+col q_writer for a9;
+col q_receiver for a9;
+col q_subject for a13;
+col q_reg_date for a14;
+col q_ref for 9;
+col q_re_step for 9;
+col q_re_level for a9;
+
+  
+
+--출퇴근--
+drop sequence p_check_seq;
+create sequence p_check_seq
+increment by 1
+start with 1
+minvalue 1
+nocache;
+
+drop table p_check cascade constraints;
+create table p_check(
+c_num number primary key,
+c_name varchar2(20) not null,
+c_date date default sysdate,
+c_intime date,
+c_outtime date,
+c_count number default 0,
+m_num number
+);
+commit;
+
+select * from p_member;
+
+insert into p_check values
+(p_check_seq.nextval, '메인관리자', '2021-02-01', '2021-02-01', '2021-02-01', 1, 1);
+insert into p_check values
+(p_check_seq.nextval, '메인관리자', '2021-03-01', '2021-03-01', '2021-03-01', 1, 1);
+insert into p_check values
+(p_check_seq.nextval, '메인관리자', '2021-03-10', '2021-03-10', '2021-03-10', 1, 1);
+insert into p_check(c_num,c_name,c_date,c_intime,c_count,m_num) values
+(p_check_seq.nextval, '메인관리자', '2021-03-15', '2021-03-15', 0, 1);
+
+commit;
+
+col c_name for a10
+
+select * from p_check ;
+
+
+
+
+--열차정보
+
+drop table p_train cascade constraints;
+
+create table p_train(
+t_num number primary key, -- 열차번호
+t_type varchar2(10) default 'KTX', -- 열차종류
+t_way varchar2(30) not null, -- 운행노선
+t_count int default 40 -- 좌석갯수
+);
+
+select * from p_train;
+
+commit;
+
+--운행정보
+drop table p_race cascade constraints;
+drop sequence r_seq;
+
+create sequence r_seq
+increment by 1
+start with 1
+minvalue 1
+nocache;
+
+create table p_race(
+t_num number references p_train (t_num ) on delete cascade,--열차번호(외래키)
+r_num number primary key,
+r_start varchar2(20) not null,--출발역
+r_end varchar2(20) not null,--도착역
+r_starth number not null,--출발(시)
+r_startm number not null,--출발(분)
+r_endh number not null,--도착(시)
+r_endm number not null,--도착(분)
+r_price number not null--표값
+);
+
+col t_num for 999
+col r_num for 99999
+col r_start for a10
+col r_end for  a10
+col r_starth for 99
+col r_startm for 99
+col r_endh for 99
+col r_endm for 99
+
+select * from p_race
+order by t_num asc;
+
+select count(*) from p_race;
+
+commit;
+
+--좌석정보
+drop table p_sit cascade constraints;
+
+CREATE TABLE p_sit
+(
+    s_no number primary key, -- 좌석번호
+    r_num NUMBER references p_race (r_num) on delete cascade, -- 운행번호 
+    s_code varchar2(10) NOT NULL  -- 좌석구역(A-D)
+);
+--s_no에 시퀀스사용
+drop sequence p_sit_seq;
+create sequence p_sit_seq
+increment by 1
+start with 1
+minvalue 1
+nocache;
+
+
+--사내공지
+drop table p_inboard;
+
+create table p_inboard( 
+   i_num number not null primary key,
+   i_writer varchar2(20) not null,
+   i_subject varchar2(100) not null,
+   i_passwd varchar2(20) not null,
+   i_reg_date date not null,
+   i_readcount int default 0,
+   i_content varchar2(2000) not null,
+   i_filename varchar2(40)
+);
+
+drop sequence in_seq;
+create sequence in_seq
+  increment by 1
+  start with 1
+  minvalue 1
+  nocache;
+
+Insert into p_inboard(I_NUM,I_WRITER,I_SUBJECT,I_PASSWD,I_REG_DATE,I_READCOUNT,I_CONTENT,I_FILENAME) values (in_seq.nextval,'총무팀','사내공지 입니다','1234',to_date('21/04/16','RR/MM/DD'),30,'발표까지 5일남았습니다 화이팅!',null);
+Insert into p_inboard(I_NUM,I_WRITER,I_SUBJECT,I_PASSWD,I_REG_DATE,I_READCOUNT,I_CONTENT,I_FILENAME) values (in_seq.nextval,'열차관리팀','서울 역 코드','1234',to_date('21/04/18','RR/MM/DD'),28,'첨부파일참조','서울 역별 코드값.txt');
+Insert into p_inboard(I_NUM,I_WRITER,I_SUBJECT,I_PASSWD,I_REG_DATE,I_READCOUNT,I_CONTENT,I_FILENAME) values (in_seq.nextval,'인사관리팀','배송직채용공고','1234',to_date('21/04/18','RR/MM/DD'),17,'배송직채용공고<br>','배송직채용공고.jpg');
+Insert into p_inboard(I_NUM,I_WRITER,I_SUBJECT,I_PASSWD,I_REG_DATE,I_READCOUNT,I_CONTENT,I_FILENAME) values (in_seq.nextval,'열차관리팀','역별 코드 수정예정','1234',to_date('21/04/18','RR/MM/DD'),1,'추후 재공지',null);
+Insert into p_inboard(I_NUM,I_WRITER,I_SUBJECT,I_PASSWD,I_REG_DATE,I_READCOUNT,I_CONTENT,I_FILENAME) values (in_seq.nextval,'인사관리팀','04월 정기 인사발령','1234',to_date('21/04/18','RR/MM/DD'),2,'인사발령<br>서울역 1팀 강인자 > 용산역 3팀<br>강릉역 2팀 노다지 > 동해역 3팀',null);
+
+
+col i_num for 99999
+col i_writer for a10
+col i_subject for a10
+col i_passwd for a5
+col i_reg_date for a10
+col i_readcount for 99999
+col i_content for a10
+col i_filename for a15
+
+select * from p_inboard;
+
+commit;
+
+
+--유실물
+drop table p_lost;
+
+
+ create table p_lost(
+ l_num number not null primary key, --파일고유키
+ l_name varchar2(30) not null, --이름(제목)
+ l_content varchar2(600) not null, --내용
+ l_image   varchar2(50), --파일이미지이름
+ l_date date default sysdate, --분실물 올린 날짜
+ l_state varchar2(20) default '대기' );
+
+ 
+drop sequence l_seq;
+
+ create sequence l_seq
+ increment by 1
+ start with 1
+ minvalue 1
+ maxvalue 10000
+ nocache;
+
+
+insert into p_lost(l_num,l_name,l_content,l_image,l_date,l_state)
+ values(l_seq.nextval,'아이폰1','용산역 2번출구 화장실에서 습득','아이폰1.jpg','2019-1-1','대기');
+
+
+commit;
+
